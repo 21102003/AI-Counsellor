@@ -21,6 +21,9 @@ engine = create_async_engine(
     echo=False,  # Set to True for SQL debugging
     future=True,
     pool_pre_ping=True,
+    connect_args={
+        "statement_cache_size": 0,  # Disable prepared statements for pgbouncer compatibility
+    } if "postgresql" in DATABASE_URL else {},
 )
 
 # Async session factory
