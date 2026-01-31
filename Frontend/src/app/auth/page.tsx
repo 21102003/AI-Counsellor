@@ -33,6 +33,7 @@ function AuthPageContent() {
     const token = searchParams.get('token');
     const oauthProvider = searchParams.get('oauth');
     const oauthError = searchParams.get('error');
+    const redirectPath = searchParams.get('redirect') || '/dashboard';
     
     if (oauthError) {
       console.error('[OAuth] Error from callback:', oauthError);
@@ -44,6 +45,7 @@ function AuthPageContent() {
     
     if (token && oauthProvider) {
       console.log(`[OAuth] Received token from ${oauthProvider} login`);
+      console.log(`[OAuth] Redirect path: ${redirectPath}`);
       
       // Store the token
       localStorage.setItem('access_token', token);
@@ -56,10 +58,10 @@ function AuthPageContent() {
       if (storedToken) {
         setIsSuccess(true);
         
-        // Redirect to dashboard after brief delay
+        // Redirect to the path specified by backend (onboarding for new users, dashboard for existing)
         setTimeout(() => {
-          console.log('[OAuth] Redirecting to dashboard...');
-          window.location.href = '/dashboard';
+          console.log(`[OAuth] Redirecting to ${redirectPath}...`);
+          window.location.href = redirectPath;
         }, 1000);
       } else {
         setError('Failed to store authentication token');

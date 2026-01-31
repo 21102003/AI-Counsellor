@@ -109,8 +109,10 @@ async def google_callback(
         result = await db.execute(select(User).where(User.email == email))
         user = result.scalar_one_or_none()
         
+        is_new_user = False
         if not user:
             # Create new user (no password for OAuth users)
+            is_new_user = True
             user = User(
                 email=email,
                 password_hash="OAUTH_USER",  # Marker for OAuth users
@@ -119,16 +121,25 @@ async def google_callback(
             db.add(user)
             await db.flush()
             
-            # Create empty profile
-            profile = Profile(user_id=user.id)
+            # Create empty profile with stage 1 (onboarding)
+            profile = Profile(user_id=user.id, current_stage=1)
             db.add(profile)
             await db.commit()
+        else:
+            # Check if existing user has completed onboarding
+            profile_result = await db.execute(select(Profile).where(Profile.user_id == user.id))
+            profile = profile_result.scalar_one_or_none()
+            if profile and profile.current_stage > 1:
+                is_new_user = False
+            else:
+                is_new_user = True  # Existing user but hasn't completed onboarding
         
         # Generate JWT token
         jwt_token = create_access_token(data={"sub": str(user.id), "email": user.email})
         
-        # Redirect to frontend with token
-        return RedirectResponse(url=f"{FRONTEND_URL}/auth?token={jwt_token}&oauth=google")
+        # Redirect to frontend with token - new users go to onboarding
+        redirect_path = "/onboarding" if is_new_user else "/dashboard"
+        return RedirectResponse(url=f"{FRONTEND_URL}/auth?token={jwt_token}&oauth=google&redirect={redirect_path}")
         
     except Exception as e:
         print(f"Google OAuth error: {e}")
@@ -236,8 +247,10 @@ async def github_callback(
         result = await db.execute(select(User).where(User.email == email))
         user = result.scalar_one_or_none()
         
+        is_new_user = False
         if not user:
             # Create new user
+            is_new_user = True
             user = User(
                 email=email,
                 password_hash="OAUTH_USER",
@@ -246,16 +259,25 @@ async def github_callback(
             db.add(user)
             await db.flush()
             
-            # Create empty profile
-            profile = Profile(user_id=user.id)
+            # Create empty profile with stage 1 (onboarding)
+            profile = Profile(user_id=user.id, current_stage=1)
             db.add(profile)
             await db.commit()
+        else:
+            # Check if existing user has completed onboarding
+            profile_result = await db.execute(select(Profile).where(Profile.user_id == user.id))
+            profile = profile_result.scalar_one_or_none()
+            if profile and profile.current_stage > 1:
+                is_new_user = False
+            else:
+                is_new_user = True  # Existing user but hasn't completed onboarding
         
         # Generate JWT token
         jwt_token = create_access_token(data={"sub": str(user.id), "email": user.email})
         
-        # Redirect to frontend with token
-        return RedirectResponse(url=f"{FRONTEND_URL}/auth?token={jwt_token}&oauth=github")
+        # Redirect to frontend with token - new users go to onboarding
+        redirect_path = "/onboarding" if is_new_user else "/dashboard"
+        return RedirectResponse(url=f"{FRONTEND_URL}/auth?token={jwt_token}&oauth=github&redirect={redirect_path}")
         
     except Exception as e:
         print(f"GitHub OAuth error: {e}")
