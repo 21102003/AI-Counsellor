@@ -43,11 +43,23 @@ app = FastAPI(
 ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:3001",
-    os.getenv("FRONTEND_URL", "http://localhost:3000"),
 ]
-# Add any additional origins from environment
-if os.getenv("ALLOWED_ORIGINS"):
-    ALLOWED_ORIGINS.extend(os.getenv("ALLOWED_ORIGINS").split(","))
+
+# Add frontend URL from environment
+frontend_url = os.getenv("FRONTEND_URL", "").strip()
+if frontend_url and frontend_url not in ALLOWED_ORIGINS:
+    ALLOWED_ORIGINS.append(frontend_url)
+
+# Add any additional origins from environment (comma-separated)
+extra_origins = os.getenv("ALLOWED_ORIGINS", "").strip()
+if extra_origins:
+    for origin in extra_origins.split(","):
+        origin = origin.strip()
+        if origin and origin not in ALLOWED_ORIGINS:
+            ALLOWED_ORIGINS.append(origin)
+
+# Debug log
+print(f"CORS Allowed Origins: {ALLOWED_ORIGINS}")
 
 app.add_middleware(
     CORSMiddleware,
