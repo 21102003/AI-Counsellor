@@ -9,7 +9,7 @@ from sqlalchemy import select
 import os
 import secrets
 import httpx
-from urllib.parse import urlencode
+from urllib.parse import urlencode, quote
 
 from database import get_db
 from models import User, Profile
@@ -138,7 +138,7 @@ async def google_callback(
         jwt_token = create_access_token(data={"sub": str(user.id), "email": user.email})
         
         # Redirect to frontend with token - new users go to onboarding
-        redirect_path = "/onboarding" if is_new_user else "/dashboard"
+        redirect_path = "onboarding" if is_new_user else "dashboard"
         return RedirectResponse(url=f"{FRONTEND_URL}/auth?token={jwt_token}&oauth=google&redirect={redirect_path}")
         
     except Exception as e:
@@ -276,7 +276,7 @@ async def github_callback(
         jwt_token = create_access_token(data={"sub": str(user.id), "email": user.email})
         
         # Redirect to frontend with token - new users go to onboarding
-        redirect_path = "/onboarding" if is_new_user else "/dashboard"
+        redirect_path = "onboarding" if is_new_user else "dashboard"
         return RedirectResponse(url=f"{FRONTEND_URL}/auth?token={jwt_token}&oauth=github&redirect={redirect_path}")
         
     except Exception as e:

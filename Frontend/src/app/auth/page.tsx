@@ -33,7 +33,11 @@ function AuthPageContent() {
     const token = searchParams.get('token');
     const oauthProvider = searchParams.get('oauth');
     const oauthError = searchParams.get('error');
-    const redirectPath = searchParams.get('redirect') || '/dashboard';
+    const redirectParam = searchParams.get('redirect');
+    // Add leading slash if not present
+    const redirectPath = redirectParam ? (redirectParam.startsWith('/') ? redirectParam : `/${redirectParam}`) : '/dashboard';
+    
+    console.log('[OAuth] URL params:', { token: !!token, oauthProvider, oauthError, redirectParam, redirectPath });
     
     if (oauthError) {
       console.error('[OAuth] Error from callback:', oauthError);
