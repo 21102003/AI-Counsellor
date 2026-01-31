@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Mail, 
@@ -20,10 +21,53 @@ import { API } from "@/lib/api";
 import SocialButton from "@/components/SocialButton";
 
 export default function AuthPage() {
+  const searchParams = useSearchParams();
   const [isLogin, setIsLogin] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  // Handle OAuth callback token from URL
+  useEffect(() => {
+    const token = searchParams.get('token');
+    const oauthProvider = searchParams.get('oauth');
+    const oauthError = searchParams.get('error');
+    
+    if (oauthError) {
+      console.error('[OAuth] Error from callback:', oauthError);
+      setError(`OAuth error: ${oauthError}`);
+      // Clean URL
+      window.history.replaceState({}, '', '/auth');
+      return;
+    }
+    
+    if (token && oauthProvider) {
+      console.log(`[OAuth] Received token from ${oauthProvider} login`);
+      
+      // Store the token
+      localStorage.setItem('access_token', token);
+      localStorage.setItem('token', token);
+      
+      // Verify token storage
+      const storedToken = localStorage.getItem('access_token');
+      console.log('[OAuth] Token stored:', !!storedToken);
+      
+      if (storedToken) {
+        setIsSuccess(true);
+        
+        // Redirect to dashboard after brief delay
+        setTimeout(() => {
+          console.log('[OAuth] Redirecting to dashboard...');
+          window.location.href = '/dashboard';
+        }, 1000);
+      } else {
+        setError('Failed to store authentication token');
+      }
+      
+      // Clean URL
+      window.history.replaceState({}, '', '/auth');
+    }
+  }, [searchParams]);
   
   // Social auth loading states
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
