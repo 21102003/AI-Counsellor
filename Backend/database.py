@@ -4,6 +4,7 @@ Async SQLAlchemy engine for SQLite/PostgreSQL
 """
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from sqlalchemy.orm import declarative_base
+from sqlalchemy.pool import NullPool
 import os
 
 # Database URL - supports both SQLite (local) and PostgreSQL (production)
@@ -19,13 +20,24 @@ elif DATABASE_URL.startswith("postgresql://"):
 is_postgres = "postgresql+asyncpg://" in DATABASE_URL
 
 # Create async engine with pgbouncer-compatible settings
-engine = create_async_engine(
-    DATABASE_URL,
-    echo=False,  # Set to True for SQL debugging
-    future=True,
-    pool_pre_ping=True,
-    connect_args={"statement_cache_size": 0, "prepared_statement_cache_size": 0} if is_postgres else {},
-)
+# Use NullPool to let pgbouncer handle connection pooling
+if is_postgres:
+    engine = create_async_engine(
+        DATABASE_URL,
+        echo=False,
+        poolclass=NullPool,  # Disable SQLAlchemy pooling, let pgbouncer handle it
+        connect_args={
+            "statement_cache_size": 0,
+            "prepared_statement_cache_size": 0,
+        },
+    )
+else:
+    engine = create_async_engine(
+        DATABASE_URL,
+        echo=False,
+        future=True,
+        pool_pre_ping=True,
+    )
 
 # Async session factory
 AsyncSessionLocal = async_sessionmaker(
