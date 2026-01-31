@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
@@ -20,7 +20,8 @@ import { Input } from "@/components/ui/input";
 import { API } from "@/lib/api";
 import SocialButton from "@/components/SocialButton";
 
-export default function AuthPage() {
+// Inner component that uses useSearchParams
+function AuthPageContent() {
   const searchParams = useSearchParams();
   const [isLogin, setIsLogin] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
@@ -589,5 +590,18 @@ export default function AuthPage() {
         </AnimatePresence>
       </div>
     </div>
+  );
+}
+
+// Wrap with Suspense for useSearchParams
+export default function AuthPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#030712] flex items-center justify-center">
+        <Loader2 className="w-8 h-8 text-cyan-400 animate-spin" />
+      </div>
+    }>
+      <AuthPageContent />
+    </Suspense>
   );
 }
