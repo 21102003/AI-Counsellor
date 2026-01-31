@@ -151,17 +151,6 @@ export default function LandingPage() {
               Start My Master Plan
               <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Button>
-            <Button 
-              variant="outline"
-              size="lg"
-              onClick={() => {
-                console.log('Login to Dashboard clicked');
-                router.push('/auth');
-              }}
-              className="h-12 px-8 bg-transparent border-white/10 text-white hover:bg-white/5 transition-all rounded-full"
-            >
-              Login to Dashboard
-            </Button>
           </motion.div>
 
           {/* Hero Graphic - Interface Mockup */}
