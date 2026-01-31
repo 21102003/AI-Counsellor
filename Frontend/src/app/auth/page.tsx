@@ -90,6 +90,76 @@ function AuthPageContent() {
   const [passwordError, setPasswordError] = useState(false);
   const [nameError, setNameError] = useState(false);
   const [shakeFields, setShakeFields] = useState(false);
+  
+  // Validation error messages
+  const [emailErrorMsg, setEmailErrorMsg] = useState("");
+  const [passwordErrorMsg, setPasswordErrorMsg] = useState("");
+  const [nameErrorMsg, setNameErrorMsg] = useState("");
+
+  // Name input validation - only allow letters and spaces
+  const handleNameChange = (value: string) => {
+    // Only allow letters, spaces, hyphens, and apostrophes (for names like O'Brien, Mary-Jane)
+    const nameRegex = /^[a-zA-Z\s'-]*$/;
+    if (nameRegex.test(value)) {
+      setName(value);
+    }
+  };
+
+  const validateFullName = (fullName: string): boolean => {
+    const trimmed = fullName.trim();
+    
+    // Must contain at least 2 words (first name + last name)
+    const words = trimmed.split(/\s+/).filter(word => word.length > 0);
+    if (words.length < 2) {
+      setNameErrorMsg("Please enter your full name (First and Last name)");
+      return false;
+    }
+    
+    // Each word must be at least 2 characters
+    for (const word of words) {
+      if (word.length < 2) {
+        setNameErrorMsg("Each name must be at least 2 characters");
+        return false;
+      }
+    }
+    
+    // Only letters, spaces, hyphens, and apostrophes allowed
+    const nameRegex = /^[a-zA-Z\s'-]+$/;
+    if (!nameRegex.test(trimmed)) {
+      setNameErrorMsg("Name can only contain letters, spaces, hyphens, and apostrophes");
+      return false;
+    }
+    
+    return true;
+  };
+
+  const validatePassword = (pwd: string): boolean => {
+    // Minimum 8 characters
+    if (pwd.length < 8) {
+      setPasswordErrorMsg("Password must be at least 8 characters");
+      return false;
+    }
+    
+    // Must contain at least one uppercase letter
+    if (!/[A-Z]/.test(pwd)) {
+      setPasswordErrorMsg("Password must contain at least one uppercase letter");
+      return false;
+    }
+    
+    // Must contain at least one number
+    if (!/[0-9]/.test(pwd)) {
+      setPasswordErrorMsg("Password must contain at least one number");
+      return false;
+    }
+    
+    // Must contain at least one special character
+    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(pwd)) {
+      setPasswordErrorMsg("Password must contain at least one special character");
+      return false;
+    }
+    
+    return true;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -98,33 +168,49 @@ function AuthPageContent() {
     setEmailError(false);
     setPasswordError(false);
     setNameError(false);
+    setEmailErrorMsg("");
+    setPasswordErrorMsg("");
+    setNameErrorMsg("");
     setError(null);
     
     // Validation flags
     let hasError = false;
     
     // Name validation (Join mode only)
-    if (!isLogin && name.trim().length < 3) {
-      setNameError(true);
-      hasError = true;
+    if (!isLogin) {
+      if (!validateFullName(name)) {
+        setNameError(true);
+        hasError = true;
+      }
     }
     
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email.trim() || !emailRegex.test(email)) {
       setEmailError(true);
+      setEmailErrorMsg("Please enter a valid email address");
       hasError = true;
     }
     
     // Password validation
-    if (password.length < 8) {
-      setPasswordError(true);
-      hasError = true;
+    if (!isLogin) {
+      // Strict validation for signup
+      if (!validatePassword(password)) {
+        setPasswordError(true);
+        hasError = true;
+      }
+    } else {
+      // Simple length check for login
+      if (password.length < 8) {
+        setPasswordError(true);
+        setPasswordErrorMsg("Password must be at least 8 characters");
+        hasError = true;
+      }
     }
     
     // If validation fails, trigger shake animation
     if (hasError) {
-      setError("Error: Invalid Credentials Protocol");
+      setError("Validation Error: Please check your inputs");
       setShakeFields(true);
       setTimeout(() => setShakeFields(false), 500);
       return;
@@ -420,30 +506,33 @@ function AuthPageContent() {
                       animate={shakeFields && nameError ? { x: [-10, 10, -10, 10, 0] } : {}}
                       transition={{ duration: 0.4 }}
                       className={`bg-white/[0.03] border rounded-xl p-3 group-focus-within:border-indigo-500/50 transition-all duration-300 ${
-                        nameError ? "border-rose-500/50" : name.length > 2 ? "border-emerald-500/50" : "border-white/10"
+                        nameError ? "border-rose-500/50" : name.trim().split(/\s+/).filter(w => w.length > 0).length >= 2 ? "border-emerald-500/50" : "border-white/10"
                       }`}
                     >
                       <div className="flex items-center gap-3">
                         <User className="w-4 h-4 text-slate-400 group-focus-within:text-indigo-400 transition-colors" />
                         <input
                           type="text"
-                          placeholder="Full Name (min 3 characters)"
+                          placeholder="Full Name (First and Last name)"
                           required
                           value={name}
                           onChange={(e) => {
-                            setName(e.target.value);
-                            if (e.target.value.length > 2) setNameError(false);
+                            handleNameChange(e.target.value);
+                            if (nameError) setNameError(false);
                           }}
                           className="bg-transparent border-none outline-none w-full text-white placeholder:text-slate-400 text-sm"
                         />
                         {name.length === 0 ? (
                           <div className="w-1.5 h-1.5 rounded-full bg-slate-600" />
-                        ) : name.length > 2 ? (
+                        ) : name.trim().split(/\s+/).filter(w => w.length > 0).length >= 2 ? (
                           <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(34,197,94,0.6)] animate-pulse" />
                         ) : (
                           <div className="w-1.5 h-1.5 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.6)]" />
                         )}
                       </div>
+                      {nameErrorMsg && (
+                        <p className="text-[10px] text-rose-400 mt-1.5 ml-7">{nameErrorMsg}</p>
+                      )}
                     </motion.div>
                   </motion.div>
                 )}
@@ -478,6 +567,9 @@ function AuthPageContent() {
                       <div className="w-1.5 h-1.5 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.6)]" />
                     )}
                   </div>
+                  {emailErrorMsg && (
+                    <p className="text-[10px] text-rose-400 mt-1.5 ml-7">{emailErrorMsg}</p>
+                  )}
                 </motion.div>
               </motion.div>
 
@@ -486,30 +578,53 @@ function AuthPageContent() {
                   animate={shakeFields && passwordError ? { x: [-10, 10, -10, 10, 0] } : {}}
                   transition={{ duration: 0.4 }}
                   className={`bg-white/[0.03] border rounded-xl p-3 group-focus-within:border-indigo-500/50 transition-all duration-300 ${
-                    passwordError ? "border-rose-500/50" : password.length >= 6 ? "border-emerald-500/50" : "border-white/10"
+                    passwordError ? "border-rose-500/50" : password.length >= 8 && /[A-Z]/.test(password) && /[0-9]/.test(password) && /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password) ? "border-emerald-500/50" : "border-white/10"
                   }`}
                 >
                   <div className="flex items-center gap-3">
                     <Lock className="w-4 h-4 text-slate-400 group-focus-within:text-indigo-400 transition-colors" />
                     <input
                       type="password"
-                      placeholder="Password (min 6 characters)"
+                      placeholder={isLogin ? "Password" : "Password (8+ chars, A-Z, 0-9, !@#)"}
                       required
                       value={password}
                       onChange={(e) => {
                         setPassword(e.target.value);
-                        if (e.target.value.length >= 6) setPasswordError(false);
+                        if (passwordError) setPasswordError(false);
                       }}
                       className="bg-transparent border-none outline-none w-full text-white placeholder:text-slate-400 text-sm"
                     />
                     {password.length === 0 ? (
                       <div className="w-1.5 h-1.5 rounded-full bg-slate-600" />
-                    ) : password.length >= 6 ? (
+                    ) : password.length >= 8 && /[A-Z]/.test(password) && /[0-9]/.test(password) && /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password) ? (
                       <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(34,197,94,0.6)] animate-pulse" />
                     ) : (
                       <div className="w-1.5 h-1.5 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.6)]" />
                     )}
                   </div>
+                  {passwordErrorMsg && (
+                    <p className="text-[10px] text-rose-400 mt-1.5 ml-7">{passwordErrorMsg}</p>
+                  )}
+                  {!isLogin && password.length > 0 && !passwordError && (
+                    <div className="mt-2 ml-7 space-y-1">
+                      <div className="flex items-center gap-2 text-[10px]">
+                        <div className={`w-1 h-1 rounded-full ${password.length >= 8 ? 'bg-emerald-500' : 'bg-slate-600'}`} />
+                        <span className={password.length >= 8 ? 'text-emerald-400' : 'text-slate-500'}>8+ characters</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-[10px]">
+                        <div className={`w-1 h-1 rounded-full ${/[A-Z]/.test(password) ? 'bg-emerald-500' : 'bg-slate-600'}`} />
+                        <span className={/[A-Z]/.test(password) ? 'text-emerald-400' : 'text-slate-500'}>Uppercase letter</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-[10px]">
+                        <div className={`w-1 h-1 rounded-full ${/[0-9]/.test(password) ? 'bg-emerald-500' : 'bg-slate-600'}`} />
+                        <span className={/[0-9]/.test(password) ? 'text-emerald-400' : 'text-slate-500'}>Number</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-[10px]">
+                        <div className={`w-1 h-1 rounded-full ${/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password) ? 'bg-emerald-500' : 'bg-slate-600'}`} />
+                        <span className={/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password) ? 'text-emerald-400' : 'text-slate-500'}>Special character</span>
+                      </div>
+                    </div>
+                  )}
                 </motion.div>
               </motion.div>
             </div>
