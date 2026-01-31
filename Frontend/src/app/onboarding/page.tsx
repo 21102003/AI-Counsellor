@@ -39,17 +39,19 @@ interface OnboardingData {
 
 // --- Components ---
 
-const ProgressIndicator = ({ step }: { step: number }) => (
+const ProgressIndicator = ({ step, onStepClick }: { step: number; onStepClick: (targetStep: number) => void }) => (
   <div className="w-full max-w-md mx-auto mb-12">
     <div className="flex justify-between gap-2 mb-3">
       {[1, 2, 3, 4].map((s) => (
-        <div 
-          key={s} 
+        <button
+          key={s}
+          onClick={() => onStepClick(s)}
           className={cn(
-            "h-1.5 flex-1 rounded-full transition-all duration-500",
-            s <= step ? "bg-indigo-500 shadow-[0_0_10px_rgba(99,102,241,0.5)]" : "bg-white/10"
+            "h-1.5 flex-1 rounded-full transition-all duration-500 cursor-pointer hover:scale-105",
+            s <= step ? "bg-indigo-500 shadow-[0_0_10px_rgba(99,102,241,0.5)]" : "bg-white/10 hover:bg-white/20"
           )}
           style={s === step ? { animation: "pulse 2s infinite" } : {}}
+          aria-label={`Go to step ${s}`}
         />
       ))}
     </div>
@@ -256,7 +258,7 @@ export default function OnboardingPage() {
       </div>
 
       <div className="w-full max-w-2xl relative z-10">
-        <ProgressIndicator step={step} />
+        <ProgressIndicator step={step} onStepClick={(targetStep) => setStep(targetStep)} />
 
         <div className="relative min-h-[500px]">
           <AnimatePresence mode="wait">
