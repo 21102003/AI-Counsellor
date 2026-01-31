@@ -15,6 +15,7 @@ import {
 import { usePathname } from "next/navigation";
 import { useChat } from "@/hooks/useChat";
 import { cn } from "@/lib/utils";
+import ReactMarkdown from "react-markdown";
 
 // Context mapping for different pages
 const PAGE_CONTEXTS: Record<string, { label: string; icon: React.ElementType; color: string }> = {
@@ -210,7 +211,13 @@ export default function GlobalAIChat() {
                         : "bg-white/[0.03] border border-white/10 text-slate-200"
                     )}
                   >
-                    <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                    {message.type === "ai" ? (
+                      <div className="text-sm prose prose-invert prose-sm max-w-none prose-p:my-1 prose-ul:my-1 prose-li:my-0 prose-strong:text-indigo-300">
+                        <ReactMarkdown>{message.content}</ReactMarkdown>
+                      </div>
+                    ) : (
+                      <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                    )}
 
                     {/* University Artifact Card */}
                     {message.artifact && (
