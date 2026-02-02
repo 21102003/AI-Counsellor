@@ -11,10 +11,13 @@ import {
   X, 
   Trash2,
   Check,
-  Loader2
+  Loader2,
+  Menu
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { API, University } from "@/lib/api";
 import { ProtectedRoute } from "@/lib/auth-context";
+import { useShortlist } from "@/lib/shortlist-context";
 import { UniversitySuperCard } from "./components";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
@@ -35,12 +38,13 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 export default function DiscoveryPage() {
+  const router = useRouter();
+  const { shortlist, addToShortlist, removeFromShortlist, isShortlisted, clearShortlist } = useShortlist();
   const [universities, setUniversities] = useState<University[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [budget, setBudget] = useState([60000]);
   const [riskType, setRiskType] = useState<string>("all");
   const [search, setSearch] = useState("");
-  const [shortlist, setShortlist] = useState<University[]>([]);
   const [selectedUniForLock, setSelectedUniForLock] = useState<University | null>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [selectedRegions, setSelectedRegions] = useState<string[]>(['USA', 'UK', 'Canada', 'Germany']); // All regions selected by default
@@ -93,11 +97,11 @@ export default function DiscoveryPage() {
   }, [search, budget, riskType, universities, selectedRegions]);
 
   const toggleShortlist = (uni: University) => {
-    setShortlist(prev => 
-      prev.find(u => u.id === uni.id) 
-        ? prev.filter(u => u.id !== uni.id) 
-        : [...prev, uni]
-    );
+    if (isShortlisted(uni.id)) {
+      removeFromShortlist(uni.id);
+    } else {
+      addToShortlist(uni);
+    }
   };
 
   const handleLockUniversity = async () => {
@@ -117,31 +121,39 @@ export default function DiscoveryPage() {
     <ProtectedRoute>
     <div className="min-h-screen bg-[#030712] text-slate-400 font-sans selection:bg-indigo-500/30 overflow-hidden flex flex-col">
       {/* Header */}
-      <header className="h-16 border-b border-white/5 bg-black/40 backdrop-blur-md flex items-center justify-between px-6 z-40 mt-20">
-        <div className="flex items-center gap-4">
-          <div className="p-2 rounded-lg bg-indigo-500/10 border border-indigo-500/20">
+      <header className="h-16 border-b border-white/5 bg-black/40 backdrop-blur-md flex items-center justify-between px-4 md:px-6 z-40 mt-16 md:mt-20">
+        <div className="flex items-center gap-2 md:gap-4">
+          {/* Mobile Hamburger Menu */}
+          <button 
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            className="block md:hidden p-2 rounded-lg bg-indigo-500/10 border border-indigo-500/20 hover:bg-indigo-500/20 transition-colors"
+          >
+            <Menu className="w-4 h-4 text-indigo-400" />
+          </button>
+          
+          <div className="hidden md:flex p-2 rounded-lg bg-indigo-500/10 border border-indigo-500/20">
             <Filter className="w-4 h-4 text-indigo-400" />
           </div>
           <div>
-            <h1 className="text-sm font-bold text-white uppercase tracking-widest">University Discovery Protocol</h1>
-            <p className="text-[10px] text-slate-500 font-mono">
-              {isLoading ? "SCANNING..." : `FOUND ${filteredUniversities.length} INSTITUTIONS`}
+            <h1 className="text-xs md:text-sm font-bold text-white uppercase tracking-widest">Discovery</h1>
+            <p className="text-[9px] md:text-[10px] text-slate-500 font-mono">
+              {isLoading ? "SCANNING..." : `${filteredUniversities.length} FOUND`}
             </p>
           </div>
         </div>
         
-        <div className="flex items-center gap-6">
-          <div className="relative w-64">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-500" />
+        <div className="flex items-center gap-2 md:gap-6">
+          <div className="relative w-32 md:w-64">
+            <Search className="absolute left-2 md:left-3 top-1/2 -translate-y-1/2 w-3 md:w-3.5 h-3 md:h-3.5 text-slate-500" />
             <Input 
-              placeholder="Search by name or location..." 
+              placeholder="Search..." 
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="bg-white/5 border-white/10 pl-9 h-9 text-xs focus:ring-indigo-500/50"
+              className="bg-white/5 border-white/10 pl-7 md:pl-9 h-8 md:h-9 text-[10px] md:text-xs text-white placeholder:text-slate-500 focus:ring-indigo-500/50"
             />
           </div>
-          <div className="h-8 w-px bg-white/5" />
-          <div className="flex items-center gap-2">
+          <div className="hidden md:block h-8 w-px bg-white/5" />
+          <div className="hidden md:flex items-center gap-2">
             <span className="text-[10px] font-mono text-slate-500 uppercase tracking-tighter">System Health:</span>
             <div className="flex gap-0.5">
               {[1, 2, 3].map(i => <div key={i} className="w-1 h-3 rounded-full bg-emerald-500/50 animate-pulse" />)}
@@ -154,12 +166,23 @@ export default function DiscoveryPage() {
         {/* Sidebar Filters */}
         <AnimatePresence initial={false}>
           {isSidebarOpen && (
-            <motion.aside
-              initial={{ x: -300, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: -300, opacity: 0 }}
-              className="w-72 border-r border-white/5 bg-black/20 backdrop-blur-xl p-6 pt-28 flex flex-col gap-8 z-30"
-            >
+            <>
+              {/* Mobile Backdrop */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setIsSidebarOpen(false)}
+                className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden"
+              />
+              
+              {/* Sidebar Drawer */}
+              <motion.aside
+                initial={{ x: -300, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={{ x: -300, opacity: 0 }}
+                className="fixed md:relative w-72 md:w-64 lg:w-72 h-full border-r border-white/5 bg-[#0B1120] backdrop-blur-xl p-4 md:p-6 pt-6 md:pt-28 flex flex-col gap-6 md:gap-8 z-50 overflow-y-auto"
+              >
               <div className="space-y-6">
                 {/* Budget Simulator */}
                 <div className="space-y-4">
@@ -247,24 +270,25 @@ export default function DiscoveryPage() {
                 </Button>
               </div>
             </motion.aside>
+            </>
           )}
         </AnimatePresence>
 
-        {/* Toggle Sidebar Button */}
+        {/* Toggle Sidebar Button - Desktop Only */}
         <button 
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          className="absolute left-0 top-1/2 -translate-y-1/2 z-50 p-1 bg-indigo-500/10 border border-white/5 rounded-r-lg hover:bg-indigo-500/20 transition-colors"
+          className="hidden md:block absolute left-0 top-1/2 -translate-y-1/2 z-30 p-1 bg-indigo-500/10 border border-white/5 rounded-r-lg hover:bg-indigo-500/20 transition-colors"
         >
           {isSidebarOpen ? <ChevronLeft className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
         </button>
 
         {/* Main Grid */}
-        <main className="flex-1 overflow-y-auto p-8 custom-scrollbar relative">
+        <main className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar relative">
           <div className="max-w-7xl mx-auto">
-            <div className="flex justify-between items-end mb-8">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-6 md:mb-8 gap-4">
               <div>
-                <h2 className="text-2xl font-bold text-white tracking-tight mb-2">Marketplace Results</h2>
-                <p className="text-xs text-slate-500">Showing {filteredUniversities.length} institutions matching your neural profile.</p>
+                <h2 className="text-xl md:text-2xl font-bold text-white tracking-tight mb-2">Marketplace Results</h2>
+                <p className="text-[10px] md:text-xs text-slate-500">Showing {filteredUniversities.length} institutions matching your profile.</p>
               </div>
               <div className="flex gap-2">
                 <Badge variant="secondary" className="bg-white/5 text-slate-400 text-[10px] border-white/5">
@@ -288,7 +312,7 @@ export default function DiscoveryPage() {
                       university={uni} 
                       onLock={setSelectedUniForLock}
                       onShortlist={toggleShortlist}
-                      isShortlisted={!!shortlist.find(u => u.id === uni.id)}
+                      isShortlisted={isShortlisted(uni.id)}
                     />
                   ))}
                 </AnimatePresence>
@@ -315,15 +339,15 @@ export default function DiscoveryPage() {
             initial={{ y: 100 }}
             animate={{ y: 0 }}
             exit={{ y: 100 }}
-            className="fixed bottom-0 left-0 right-0 h-20 border-t border-white/10 bg-black/60 backdrop-blur-2xl z-50 px-8 flex items-center justify-between"
+            className="fixed bottom-0 left-0 right-0 h-auto md:h-20 border-t border-white/10 bg-black/60 backdrop-blur-2xl z-50 px-4 md:px-8 py-4 md:py-0 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 md:gap-0"
           >
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-4 md:gap-6">
               <div>
                 <span className="text-[10px] font-mono text-slate-500 uppercase tracking-widest block mb-1">Portfolio</span>
-                <h4 className="text-sm font-bold text-white">{shortlist.length} Universities Selected</h4>
+                <h4 className="text-xs md:text-sm font-bold text-white">{shortlist.length} Universities</h4>
               </div>
               <div className="h-10 w-px bg-white/10" />
-              <div className="flex -space-x-2">
+              <div className="flex -space-x-2 overflow-x-auto max-w-[150px] md:max-w-none">
                 {shortlist.map((uni) => (
                   <motion.div 
                     layoutId={`shortlist-${uni.id}`}
@@ -342,13 +366,16 @@ export default function DiscoveryPage() {
               </div>
             </div>
 
-            <div className="flex gap-4">
-              <Button variant="ghost" className="text-xs text-rose-400 hover:text-rose-300 hover:bg-rose-500/10" onClick={() => setShortlist([])}>
-                <Trash2 className="w-3.5 h-3.5 mr-2" />
-                Clear All
+            <div className="flex gap-2 md:gap-4">
+              <Button variant="ghost" className="flex-1 md:flex-none text-[10px] md:text-xs text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 h-10" onClick={clearShortlist}>
+                <Trash2 className="w-3 md:w-3.5 h-3 md:h-3.5 mr-1 md:mr-2" />
+                Clear
               </Button>
-              <Button className="bg-white text-black hover:bg-white/90 text-xs font-bold px-8 rounded-full">
-                Review My Selection
+              <Button 
+                className="flex-1 md:flex-none bg-white text-black hover:bg-white/90 text-[10px] md:text-xs font-bold px-4 md:px-8 rounded-full h-10"
+                onClick={() => router.push("/discovery/review")}
+              >
+                Review Selection
               </Button>
             </div>
           </motion.footer>

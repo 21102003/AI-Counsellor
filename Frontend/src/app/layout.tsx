@@ -3,6 +3,7 @@ import "./globals.css";
 import VisualEditsMessenger from "../visual-edits/VisualEditsMessenger";
 import ErrorReporter from "@/components/ErrorReporter";
 import { AuthProvider } from "@/lib/auth-context";
+import { ShortlistProvider } from "@/lib/shortlist-context";
 import { ToastProvider } from "@/components/ToastProvider";
 import GlobalAIChat from "@/components/GlobalAIChat";
 import NeuralDock from "@/components/NeuralDock";
@@ -25,9 +26,11 @@ export default function RootLayout({
         <NeuralLogo />
         <ToastProvider>
           <AuthProvider>
-            {children}
-            <GlobalAIChat />
-            <NeuralDock />
+            <ShortlistProvider>
+              {children}
+              <GlobalAIChat />
+              <NeuralDock />
+            </ShortlistProvider>
           </AuthProvider>
         </ToastProvider>
         <VisualEditsMessenger />

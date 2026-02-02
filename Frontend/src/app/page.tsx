@@ -7,7 +7,6 @@ import {
   Lock, 
   Shield, 
   Map, 
-  RobotIcon, 
   Zap, 
   ArrowRight, 
   CheckCircle2, 
@@ -17,6 +16,7 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { NeuralBackground } from "@/components/NeuralBackground";
 
 // --- Components ---
 
@@ -48,7 +48,7 @@ const Spotlight = () => {
       className="pointer-events-none fixed inset-0 z-30 transition-opacity duration-300"
       style={{
         opacity,
-        background: `radial-gradient(600px circle at ${position.x}px ${position.y}px, rgba(99, 102, 241, 0.06), transparent 80%)`,
+        background: `radial-gradient(600px circle at ${position.x}px ${position.y}px, rgba(79, 70, 229, 0.15), transparent 80%)`,
       }}
     />
   );
@@ -56,13 +56,13 @@ const Spotlight = () => {
 
 const AuroraBackground = () => (
   <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-[1200px] h-[600px] pointer-events-none -z-10">
-    <div className="absolute inset-0 bg-gradient-to-b from-indigo-500/20 via-violet-500/10 to-transparent blur-[120px] opacity-50 rounded-full" />
-    <div className="absolute top-0 left-1/4 w-1/2 h-1/2 bg-cyan-500/10 blur-[100px] opacity-30 animate-pulse" />
+    <div className="absolute inset-0 bg-gradient-to-b from-indigo-100 via-violet-50 to-transparent blur-[120px] opacity-60 rounded-full" />
+    <div className="absolute top-0 left-1/4 w-1/2 h-1/2 bg-teal-50 blur-[100px] opacity-40 animate-pulse" />
   </div>
 );
 
 const GlassCard = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
-  <div className={`bg-white/[0.02] border border-white/[0.05] backdrop-blur-2xl rounded-2xl p-6 ${className}`}>
+  <div className={`bg-white/5 border border-white/10 shadow-lg shadow-black/20 backdrop-blur-md rounded-2xl p-6 hover:-translate-y-1 transition-all ${className}`}>
     {children}
   </div>
 );
@@ -94,51 +94,51 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#030712] text-slate-400 font-sans selection:bg-indigo-500/30 overflow-x-hidden">
+    <div className="min-h-screen bg-slate-50 text-slate-600 font-sans selection:bg-indigo-100 overflow-x-hidden">
       <Spotlight />
       
       {/* Hero Section */}
-      <section className="relative pt-32 pb-20 px-6 overflow-hidden">
-        <AuroraBackground />
+      <section className="relative min-h-screen flex items-center justify-center px-6 overflow-hidden">
+        {/* Neural Background Animation */}
+        <div className="absolute inset-0 z-0">
+          <NeuralBackground theme="dark" nodeCount={30} connectionDistance={180} enableMouseInteraction={true} />
+        </div>
         
         <motion.div 
-          className="max-w-4xl mx-auto text-center"
+          className="relative z-10 max-w-4xl mx-auto text-center flex flex-col items-center justify-center"
           variants={stagger}
           initial="initial"
           animate="animate"
         >
-          <motion.div variants={fadeIn} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-indigo-500/20 bg-indigo-500/10 text-indigo-300 text-sm font-medium mb-8">
+          <motion.div variants={fadeIn} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 text-white border border-white/10 text-sm font-medium mb-8 backdrop-blur-sm">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-400"></span>
             </span>
             The unfair advantage for study abroad
           </motion.div>
 
           <motion.h1 
             variants={fadeIn}
-            className="text-5xl md:text-7xl font-bold tracking-tight mb-8 leading-[1.1]"
+            className="text-5xl md:text-7xl font-bold tracking-tight mb-8 leading-[1.1] text-white"
           >
-            <span className="bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-white/40">
-              Admissions isn't a lottery.<br />
-              It’s{" "}
-              <span className="text-indigo-500 drop-shadow-[0_0_15px_rgba(99,102,241,0.5)]">
-                Engineering
-              </span>
-              .
+            Admissions isn't a lottery.<br />
+            It's{" "}
+            <span className="text-indigo-300">
+              Engineering
             </span>
+            .
           </motion.h1>
 
           <motion.p 
             variants={fadeIn}
-            className="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto mb-12 leading-relaxed"
-          >
+            className="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto mb-12 leading-relaxed font-medium">
             Stop drowning in forums and generic advice. The AI Counsellor builds a data-backed strategy, shortlists 3 perfect universities, and locks your path to acceptance.
           </motion.p>
 
           <motion.div 
             variants={fadeIn}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-20"
+            className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
             <Button 
               size="lg"
@@ -146,131 +146,17 @@ export default function LandingPage() {
                 console.log('Start My Master Plan clicked');
                 router.push('/auth');
               }}
-              className="h-12 px-8 bg-white text-black hover:scale-105 hover:shadow-[0_0_20px_rgba(255,255,255,0.2)] transition-all duration-300 font-semibold rounded-full group"
+              className="h-14 px-10 bg-indigo-600 text-white hover:bg-indigo-700 hover:scale-105 shadow-[0_0_20px_rgba(79,70,229,0.5)] ring-2 ring-white/50 ring-offset-2 ring-offset-transparent transition-all duration-300 font-semibold rounded-full group text-lg"
             >
               Start My Master Plan
-              <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+              <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
             </Button>
           </motion.div>
-
-          {/* Hero Graphic - Interface Mockup */}
-          <motion.div 
-            variants={fadeIn}
-            className="relative perspective-1000 max-w-5xl mx-auto"
-          >
-            <motion.div
-              style={{ rotateX: 15, rotateY: -10 }}
-              animate={{ 
-                rotateX: [15, 12, 15], 
-                rotateY: [-10, -5, -10] 
-              }}
-              transition={{ 
-                duration: 6, 
-                repeat: Infinity, 
-                ease: "easeInOut" 
-              }}
-              className="relative"
-            >
-              <GlassCard className="relative p-0 overflow-hidden shadow-2xl shadow-indigo-500/10">
-                <div className="h-8 border-b border-white/5 bg-white/5 flex items-center px-4 gap-1.5">
-                  <div className="w-2.5 h-2.5 rounded-full bg-red-500/20" />
-                  <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/20" />
-                  <div className="w-2.5 h-2.5 rounded-full bg-green-500/20" />
-                  <div className="ml-auto flex items-center gap-4">
-                    <div className="h-4 w-32 bg-white/5 rounded" />
-                    <div className="h-4 w-4 bg-white/5 rounded-full" />
-                  </div>
-                </div>
-                
-                <div className="p-8 md:p-12 grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
-                  <div className="col-span-2 space-y-6">
-                    <div className="space-y-2">
-                      <div className="h-4 w-24 bg-indigo-500/20 rounded" />
-                      <div className="h-8 w-64 bg-white/10 rounded" />
-                    </div>
-                    
-                    <div className="grid grid-cols-2 gap-4">
-                      {[1, 2, 3, 4].map(i => (
-                        <div key={i} className="h-24 bg-white/[0.03] border border-white/5 rounded-xl p-4 space-y-3">
-                          <div className="h-3 w-1/2 bg-white/10 rounded" />
-                          <div className="h-4 w-full bg-white/5 rounded" />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="space-y-6">
-                    <AnimatePresence>
-                      <motion.div 
-                        initial={{ y: 20, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        className="bg-indigo-500/10 border border-indigo-500/20 rounded-2xl p-6 relative overflow-hidden group"
-                      >
-                        <div className="flex justify-between items-start mb-4">
-                          <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center">
-                            <Globe className="h-5 w-5 text-indigo-300" />
-                          </div>
-                          <motion.div
-                            animate={isLocked ? { scale: [1, 1.2, 1] } : {}}
-                            transition={{ duration: 0.5 }}
-                          >
-                            <Lock className={`h-5 w-5 ${isLocked ? "text-green-400" : "text-white/20"}`} />
-                          </motion.div>
-                        </div>
-                        <div className="space-y-2">
-                          <p className="text-white font-medium">Stanford University</p>
-                          <p className="text-xs text-indigo-300">Computer Science • Fall 2026</p>
-                        </div>
-                        
-                        {isLocked && (
-                          <motion.div 
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
-                            className="absolute inset-0 bg-green-500/10 backdrop-blur-[2px] flex items-center justify-center pointer-events-none"
-                          >
-                            <div className="bg-green-500 text-black text-[10px] font-bold px-2 py-0.5 rounded rotate-12">
-                              LOCKED
-                            </div>
-                          </motion.div>
-                        )}
-                      </motion.div>
-                    </AnimatePresence>
-
-                    <div className="space-y-3">
-                      <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
-                        <motion.div 
-                          className="h-full bg-indigo-500"
-                          initial={{ width: "0%" }}
-                          animate={{ width: "85%" }}
-                          transition={{ duration: 2, delay: 0.5 }}
-                        />
-                      </div>
-                      <div className="flex justify-between text-[10px] text-slate-500">
-                        <span>ADMISSION PROBABILITY</span>
-                        <span className="text-indigo-400">85%</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </GlassCard>
-              
-              {/* Decorative elements */}
-              <div className="absolute -top-10 -right-10 w-40 h-40 bg-indigo-500/20 blur-[80px] -z-10" />
-              <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-violet-500/20 blur-[80px] -z-10" />
-            </motion.div>
-          </motion.div>
-
-          <motion.p 
-            variants={fadeIn}
-            className="mt-8 text-sm font-mono text-slate-500 uppercase tracking-widest italic"
-          >
-            AI Reasoning Engine active: University locked.
-          </motion.p>
         </motion.div>
       </section>
 
       {/* Grid Section */}
-      <section className="py-24 px-6 relative">
+      <section className="py-24 px-6 relative bg-slate-50">
         <div className="max-w-6xl mx-auto">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
@@ -278,7 +164,7 @@ export default function LandingPage() {
             viewport={{ once: true }}
             className="text-center mb-20"
           >
-            <h2 className="text-3xl md:text-5xl font-bold text-white mb-4 tracking-tight">
+            <h2 className="text-3xl md:text-5xl font-bold text-slate-900 mb-4 tracking-tight">
               Why 90% of students fail to get their dream admit.
             </h2>
             <div className="h-1 w-20 bg-indigo-500 mx-auto rounded-full" />
@@ -286,19 +172,19 @@ export default function LandingPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <FeatureCard 
-              icon={<Map className="h-6 w-6 text-red-400" />}
+              icon={<Map className="h-6 w-6 text-orange-500" />}
               title="Analysis Paralysis"
               description="Browsing 500 universities without a filter is not research. It's procrastination."
               delay={0}
             />
             <FeatureCard 
-              icon={<Bot className="h-6 w-6 text-orange-400" />}
+              icon={<Bot className="h-6 w-6 text-indigo-500" />}
               title="Generic Advice"
               description="Chatbots give you Wikipedia answers. We give you a strategy based on YOUR GPA."
               delay={0.1}
             />
             <FeatureCard 
-              icon={<Shield className="h-6 w-6 text-green-400" />}
+              icon={<Shield className="h-6 w-6 text-emerald-500" />}
               title="The Lock Protocol"
               description="We force you to commit. You can't start your SOP until you lock a target."
               delay={0.2}
@@ -308,19 +194,19 @@ export default function LandingPage() {
       </section>
 
       {/* Trust Footer */}
-      <footer className="py-12 px-6 border-t border-white/5 bg-black/40 backdrop-blur-md">
+      <footer className="py-12 px-6 border-t border-white/10 bg-[#0B1120]">
         <div className="max-w-6xl mx-auto flex flex-col items-center gap-8">
-          <p className="text-xs font-medium text-slate-500 uppercase tracking-[0.3em]">
+          <p className="text-xs font-medium text-slate-400 uppercase tracking-[0.3em]">
             Optimized for intakes in:
           </p>
           <div className="flex flex-wrap justify-center gap-8 md:gap-16 font-mono text-sm tracking-tighter text-slate-400">
             {["US", "UK", "CANADA", "GERMANY", "AUSTRALIA"].map((country) => (
-              <span key={country} className="hover:text-indigo-400 transition-colors cursor-default">
+              <span key={country} className="hover:text-indigo-400 transition-colors cursor-default text-slate-500">
                 {country}
               </span>
             ))}
           </div>
-          <div className="text-[10px] text-slate-600 mt-8">
+          <div className="text-[10px] text-slate-500 mt-8">
             © 2026 AI COUNSELLOR • BUILT FOR THE 1%
           </div>
         </div>
@@ -337,15 +223,15 @@ function FeatureCard({ icon, title, description, delay }: { icon: React.ReactNod
       viewport={{ once: true }}
       transition={{ delay }}
     >
-      <GlassCard className="h-full group hover:border-indigo-500/30 transition-colors duration-500">
-        <div className="mb-6 p-3 w-fit rounded-xl bg-white/5 border border-white/10 group-hover:scale-110 transition-transform duration-500">
+      <div className="h-full bg-white border border-slate-200 shadow-lg shadow-slate-200/50 rounded-2xl p-6 group hover:shadow-xl hover:scale-[1.02] hover:border-indigo-300 transition-all duration-300">
+        <div className="mb-6 p-3 w-fit rounded-xl bg-slate-50 border border-slate-200 group-hover:scale-110 transition-transform duration-500">
           {icon}
         </div>
-        <h3 className="text-xl font-bold text-white mb-3 tracking-tight">{title}</h3>
-        <p className="text-slate-400 leading-relaxed text-sm">
+        <h3 className="text-xl font-bold text-slate-900 mb-3 tracking-tight">{title}</h3>
+        <p className="text-slate-600 leading-relaxed text-sm">
           {description}
         </p>
-      </GlassCard>
+      </div>
     </motion.div>
   );
 }

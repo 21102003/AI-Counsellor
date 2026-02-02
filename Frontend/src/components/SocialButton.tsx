@@ -31,25 +31,17 @@ export default function SocialButton({
       className={`
         relative flex items-center justify-center gap-2 h-11 rounded-xl 
         text-sm font-medium transition-all duration-300 overflow-hidden
-        disabled:cursor-not-allowed disabled:opacity-50
-        ${isGoogle 
-          ? "bg-white/[0.03] border border-white/[0.08] text-white hover:bg-white hover:text-black hover:border-white" 
-          : "bg-white/[0.03] border border-white/[0.08] text-white hover:bg-white/5"
+        disabled:cursor-not-allowed disabled:opacity-50 shadow-md
+        ${
+          isGoogle
+            ? "bg-[#EA4335] text-white hover:bg-red-600"
+            : "bg-gray-900 text-white hover:bg-black"
         }
       `}
     >
-      {/* Background animation on hover (Google only) */}
-      {isGoogle && (
-        <motion.div
-          className="absolute inset-0 bg-white"
-          initial={{ x: "-100%" }}
-          whileHover={{ x: 0 }}
-          transition={{ duration: 0.3 }}
-        />
-      )}
       
       {/* Content */}
-      <div className="relative z-10 flex items-center gap-2">
+      <div className="flex items-center gap-2">
         {isLoading ? (
           <Loader2 className="w-4 h-4 animate-spin" />
         ) : (

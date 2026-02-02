@@ -48,7 +48,7 @@ const ProgressIndicator = ({ step, onStepClick }: { step: number; onStepClick: (
           onClick={() => onStepClick(s)}
           className={cn(
             "h-1.5 flex-1 rounded-full transition-all duration-500 cursor-pointer hover:scale-105",
-            s <= step ? "bg-indigo-500 shadow-[0_0_10px_rgba(99,102,241,0.5)]" : "bg-white/10 hover:bg-white/20"
+            s <= step ? "bg-indigo-600 shadow-[0_0_10px_rgba(79,70,229,0.4)]" : "bg-slate-200 hover:bg-slate-300"
           )}
           style={s === step ? { animation: "pulse 2s infinite" } : {}}
           aria-label={`Go to step ${s}`}
@@ -78,16 +78,16 @@ const CompletionOverlay = () => {
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="fixed inset-0 z-50 bg-[#030712] flex flex-col items-center justify-center p-6"
+      className="fixed inset-0 z-50 bg-[#030712] flex flex-col items-center justify-center p-6">
     >
-      <div className="absolute inset-0 bg-gradient-to-t from-indigo-500/10 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-indigo-950/30 to-transparent" />
       <div className="relative z-10 space-y-8 text-center">
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
           className="mx-auto"
         >
-          <Activity className="h-12 w-12 text-indigo-500" />
+          <Activity className="h-12 w-12 text-indigo-400" />
         </motion.div>
         
         <div className="space-y-2">
@@ -95,14 +95,14 @@ const CompletionOverlay = () => {
           <p className="text-slate-400 font-mono text-sm">Generating Recommendations...</p>
         </div>
 
-        <div className="h-20 flex items-center justify-center overflow-hidden border-y border-white/5 w-full max-w-xs mx-auto">
+        <div className="h-20 flex items-center justify-center overflow-hidden border-y border-white/10 w-full max-w-xs mx-auto">
           <AnimatePresence mode="wait">
             <motion.p 
               key={currentUni}
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: -20, opacity: 0 }}
-              className="text-xl font-bold text-indigo-300 tracking-tighter"
+              className="text-xl font-bold text-indigo-400 tracking-tighter"
             >
               {universities[currentUni]}
             </motion.p>
@@ -110,9 +110,9 @@ const CompletionOverlay = () => {
         </div>
 
         <div className="flex gap-2 justify-center">
-          <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+          <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
           <div className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse delay-75" />
-          <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse delay-150" />
+          <div className="w-2 h-2 rounded-full bg-teal-500 animate-pulse delay-150" />
         </div>
       </div>
     </motion.div>
@@ -253,8 +253,8 @@ export default function OnboardingPage() {
     <div className="min-h-screen bg-[#030712] flex items-center justify-center p-6 overflow-hidden selection:bg-indigo-500/30">
       {/* Halo Effect */}
       <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] pointer-events-none">
-        <div className="absolute inset-0 bg-indigo-500/5 blur-[120px] rounded-full animate-[spin_20s_linear_infinite]" />
-        <div className="absolute inset-20 bg-violet-500/5 blur-[100px] rounded-full animate-[spin_15s_linear_infinite_reverse]" />
+        <div className="absolute inset-0 bg-indigo-600/10 blur-[120px] rounded-full animate-[spin_20s_linear_infinite]" />
+        <div className="absolute inset-20 bg-violet-600/10 blur-[100px] rounded-full animate-[spin_15s_linear_infinite_reverse]" />
       </div>
 
       <div className="w-full max-w-2xl relative z-10">
@@ -289,14 +289,14 @@ export default function OnboardingPage() {
                         setTimeout(nextStep, 500);
                       }}
                       className={cn(
-                        "relative group p-8 rounded-2xl bg-white/[0.03] border border-white/[0.08] backdrop-blur-xl transition-all duration-300 flex flex-col items-center gap-4 hover:border-indigo-500/40 hover:bg-white/[0.05]",
-                        data.degree === item.id && "border-indigo-500/60 bg-indigo-500/5 ring-1 ring-indigo-500/20",
-                        item.pulse && !data.degree && "animate-pulse shadow-[0_0_15px_rgba(99,102,241,0.1)]"
+                        "relative group p-8 rounded-2xl bg-white/5 border border-white/10 shadow-sm transition-all duration-300 flex flex-col items-center gap-4 hover:border-indigo-500 hover:shadow-lg hover:shadow-indigo-500/20 backdrop-blur-sm",
+                        data.degree === item.id && "border-indigo-500 bg-indigo-500/10 ring-1 ring-indigo-500 shadow-lg shadow-indigo-500/30",
+                        item.pulse && !data.degree && "animate-pulse shadow-lg shadow-indigo-500/20"
                       )}
                     >
                       <item.icon className={cn(
                         "h-10 w-10 transition-colors duration-300",
-                        data.degree === item.id ? "text-indigo-400" : "text-slate-500 group-hover:text-indigo-400"
+                        data.degree === item.id ? "text-indigo-400" : "text-slate-300 group-hover:text-indigo-400"
                       )} />
                       <span className={cn(
                         "font-medium tracking-tight",
@@ -324,17 +324,17 @@ export default function OnboardingPage() {
                   <p className="text-slate-400">Your GPA tells us how high we can aim. Be honest—the AI adjusts risk accordingly.</p>
                 </div>
 
-                <div className="bg-white/[0.03] border border-white/[0.08] backdrop-blur-xl p-10 rounded-3xl space-y-10">
+                <div className="bg-white/5 border border-white/10 backdrop-blur-sm shadow-lg p-10 rounded-3xl space-y-10">
                   <div className="flex justify-between items-end">
                     <div className="space-y-1">
                       <p className="text-[10px] font-mono text-slate-500 uppercase tracking-widest">Current Metric</p>
-                      <p className="text-5xl font-bold text-white tabular-nums">{data.gpa.toFixed(1)} <span className="text-xl text-slate-600">/ 4.0</span></p>
+                      <p className="text-5xl font-bold text-white tabular-nums">{data.gpa.toFixed(1)} <span className="text-xl text-slate-400">/ 4.0</span></p>
                     </div>
                     <div className={cn(
                       "px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border",
-                      data.gpa >= 3.5 ? "text-emerald-400 border-emerald-400/20 bg-emerald-400/10" :
-                      data.gpa >= 3.0 ? "text-indigo-400 border-indigo-400/20 bg-indigo-400/10" :
-                      "text-orange-400 border-orange-400/20 bg-orange-400/10"
+                      data.gpa >= 3.5 ? "text-emerald-400 border-emerald-500/30 bg-emerald-500/10" :
+                      data.gpa >= 3.0 ? "text-indigo-400 border-indigo-500/30 bg-indigo-500/10" :
+                      "text-orange-400 border-orange-500/30 bg-orange-500/10"
                     )}>
                       {data.gpa >= 3.5 ? "Top 20% Universities Accessible" : 
                        data.gpa >= 3.0 ? "Solid Admission Potential" : 
@@ -350,14 +350,15 @@ export default function OnboardingPage() {
                     className={cn(
                       "py-4",
                       data.gpa >= 3.5 ? "[&_[data-slot=slider-range]]:bg-emerald-500" :
-                      data.gpa >= 3.0 ? "[&_[data-slot=slider-range]]:bg-indigo-500" :
-                      "[&_[data-slot=slider-range]]:bg-orange-500"
+                      data.gpa >= 3.0 ? "[&_[data-slot=slider-range]]:bg-indigo-600" :
+                      "[&_[data-slot=slider-range]]:bg-orange-500",
+                      "[&_[role=slider]]:bg-slate-200"
                     )}
                   />
 
                   <Button 
                     onClick={nextStep}
-                    className="w-full h-14 bg-white text-black hover:scale-[1.02] transition-transform rounded-2xl font-bold"
+                    className="w-full h-14 bg-indigo-600 text-white hover:bg-indigo-700 transition-all rounded-2xl font-bold shadow-lg shadow-indigo-600/30"
                   >
                     Confirm & Continue
                     <ChevronRight className="ml-2 h-5 w-5" />
@@ -380,17 +381,17 @@ export default function OnboardingPage() {
                   <p className="text-slate-400">We need a realistic boundary to filter out universities that drain your ROI.</p>
                 </div>
 
-                <div className="bg-white/[0.03] border border-white/[0.08] backdrop-blur-xl p-10 rounded-3xl space-y-10">
+                <div className="bg-white/5 border border-white/10 backdrop-blur-sm shadow-lg p-10 rounded-3xl space-y-10">
                   <div className="space-y-4">
                     <label className="text-xs font-mono text-slate-500 uppercase tracking-widest ml-1">Annual Budget ($)</label>
                     <div className="relative">
-                      <Banknote className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500" />
+                      <Banknote className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
                       <input 
                         type="number"
                         placeholder="e.g. 35000"
                         value={data.budget}
                         onChange={(e) => setData({ ...data, budget: e.target.value })}
-                        className="w-full bg-white/5 border border-white/10 rounded-2xl h-16 pl-12 pr-6 text-xl text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all placeholder:text-slate-600"
+                        className="w-full bg-white/5 border border-white/10 rounded-2xl h-16 pl-12 pr-6 text-xl text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all placeholder:text-slate-500"
                       />
                     </div>
                   </div>
@@ -416,7 +417,7 @@ export default function OnboardingPage() {
                       <div key={status.label} className="flex flex-col items-center gap-3">
                         <div className={cn(
                           "w-3 h-3 rounded-full transition-all duration-500",
-                          status.active ? status.color + " shadow-[0_0_10px_currentColor]" : "bg-white/10"
+                          status.active ? status.color + " shadow-[0_0_10px_currentColor]" : "bg-slate-200"
                         )} />
                         <span className={cn(
                           "text-[9px] uppercase tracking-tighter text-center",
@@ -431,7 +432,7 @@ export default function OnboardingPage() {
                   <Button 
                     onClick={nextStep}
                     disabled={!data.budget}
-                    className="w-full h-14 bg-white text-black hover:scale-[1.02] transition-transform rounded-2xl font-bold disabled:opacity-50"
+                    className="w-full h-14 bg-indigo-600 text-white hover:bg-indigo-700 transition-all rounded-2xl font-bold shadow-lg shadow-indigo-600/30 disabled:opacity-50"
                   >
                     Confirm & Continue
                     <ChevronRight className="ml-2 h-5 w-5" />
@@ -454,14 +455,14 @@ export default function OnboardingPage() {
                   <p className="text-slate-400">Final verification of standardized test assets.</p>
                 </div>
 
-                <div className="bg-white/[0.03] border border-white/[0.08] backdrop-blur-xl p-10 rounded-3xl space-y-8">
+                <div className="bg-white/5 border border-white/10 backdrop-blur-sm shadow-lg p-10 rounded-3xl space-y-8">
                   <div className="space-y-6">
                     <div className="space-y-4">
                       <label className="text-xs font-mono text-slate-500 uppercase tracking-widest ml-1">Target Country</label>
                       <select
                         value={data.targetCountry}
                         onChange={(e) => setData({ ...data, targetCountry: e.target.value })}
-                        className="w-full bg-white/5 border border-white/10 rounded-2xl h-14 px-4 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 [&>option]:bg-[#0b1220] [&>option]:text-white"
+                        className="w-full bg-white/5 border border-white/10 rounded-2xl h-14 px-4 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent [&>option]:bg-[#0B1120] [&>option]:text-white"
                       >
                         <option value="">Select Country</option>
                         <option value="USA">USA</option>
@@ -485,7 +486,7 @@ export default function OnboardingPage() {
                           ...data, 
                           exams: { ...data.exams, ielts: e.target.value ? parseFloat(e.target.value) : null }
                         })}
-                        className="w-full bg-white/5 border border-white/10 rounded-2xl h-14 px-4 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                        className="w-full bg-white/5 border border-white/10 rounded-2xl h-14 px-4 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent placeholder:text-slate-500"
                       />
                     </div>
 
@@ -501,7 +502,7 @@ export default function OnboardingPage() {
                           ...data, 
                           exams: { ...data.exams, gre: e.target.value ? parseInt(e.target.value) : null }
                         })}
-                        className="w-full bg-white/5 border border-white/10 rounded-2xl h-14 px-4 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                        className="w-full bg-white/5 border border-white/10 rounded-2xl h-14 px-4 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent placeholder:text-slate-500"
                       />
                     </div>
                   </div>
@@ -509,7 +510,7 @@ export default function OnboardingPage() {
                   <Button 
                     onClick={handleComplete}
                     disabled={isCompleting}
-                    className="w-full h-16 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white hover:scale-[1.02] transition-all rounded-2xl font-bold text-lg shadow-xl shadow-indigo-500/20"
+                    className="w-full h-16 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white hover:scale-[1.01] transition-all rounded-2xl font-bold text-lg shadow-lg"
                   >
                     {isCompleting ? (
                       <>
@@ -541,12 +542,12 @@ export default function OnboardingPage() {
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="fixed bottom-8 left-1/2 -translate-x-1/2 w-full max-w-md p-4 bg-red-500/10 border border-red-500/20 backdrop-blur-xl rounded-xl flex items-start gap-3 text-red-400 text-sm shadow-2xl shadow-red-500/10 z-50"
+            className="fixed bottom-8 left-1/2 -translate-x-1/2 w-full max-w-md p-4 bg-red-500/10 border border-red-500/30 backdrop-blur-xl rounded-xl flex items-start gap-3 text-red-400 text-sm shadow-xl z-50"
           >
             <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse mt-1" />
             <div className="flex-1">
               <p className="font-medium mb-1">Validation Error</p>
-              <p className="text-xs text-red-300/80">{error}</p>
+              <p className="text-xs text-red-300">{error}</p>
             </div>
           </motion.div>
         )}

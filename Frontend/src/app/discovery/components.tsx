@@ -70,12 +70,14 @@ export const UniversitySuperCard = ({
   university, 
   onLock, 
   onShortlist, 
-  isShortlisted 
+  isShortlisted,
+  showRemoveButton = false
 }: { 
   university: University; 
   onLock: (uni: University) => void;
   onShortlist: (uni: University) => void;
   isShortlisted: boolean;
+  showRemoveButton?: boolean;
 }) => {
   return (
     <motion.div
@@ -84,7 +86,7 @@ export const UniversitySuperCard = ({
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
       whileHover={{ scale: 1.01 }}
-      className="group relative bg-white/[0.03] border border-white/[0.08] backdrop-blur-xl rounded-2xl overflow-hidden transition-all duration-300 hover:border-white/20"
+      className="group relative bg-[#0B1120] border border-white/10 backdrop-blur-xl rounded-2xl overflow-hidden transition-all duration-300 hover:border-white/20"
     >
       <div className="p-6">
         {/* Header */}
@@ -152,12 +154,12 @@ export const UniversitySuperCard = ({
           </div>
 
           {/* AI Insight */}
-          <div className="bg-indigo-500/10 border border-indigo-500/20 rounded-xl p-4 mb-6 relative overflow-hidden group/insight">
+          <div className="bg-indigo-950/30 border border-indigo-500/20 rounded-xl p-4 mb-6 relative overflow-hidden group/insight">
             <div className="flex items-center gap-2 mb-2 text-indigo-300">
               <Sparkles className="w-3.5 h-3.5" />
               <span className="text-[10px] font-bold uppercase tracking-wider">AI Insight</span>
             </div>
-            <p className="text-xs text-slate-400 leading-relaxed italic">
+            <p className="text-xs text-indigo-200 leading-relaxed italic">
               {university.match_tier === 'Safe' 
                 ? `Strong admission probability. Your profile aligns well with ${university.name}'s acceptance criteria.`
                 : university.match_tier === 'Target'
@@ -168,23 +170,37 @@ export const UniversitySuperCard = ({
 
           {/* Action Array (Hidden by default, shown on hover/touch) */}
           <div className="grid grid-cols-2 gap-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className={`bg-white/5 border-white/10 hover:bg-white/10 text-xs gap-2 ${isShortlisted ? "text-rose-400 border-rose-400/30" : ""}`}
-              onClick={() => onShortlist(university)}
-            >
-              <Heart className={`w-3.5 h-3.5 ${isShortlisted ? "fill-current" : ""}`} />
-              {isShortlisted ? "Shortlisted" : "Shortlist"}
-            </Button>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="bg-white/5 border-white/10 hover:bg-white/10 text-xs gap-2"
-            >
-              <MapIcon className="w-3.5 h-3.5" />
-              Campus
-            </Button>
+            {showRemoveButton ? (
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="col-span-2 bg-rose-500/10 border-rose-400/30 hover:bg-rose-500/20 text-rose-400 text-xs gap-2"
+                onClick={() => onShortlist(university)}
+              >
+                <Heart className="w-3.5 h-3.5 fill-current" />
+                Remove from Shortlist
+              </Button>
+            ) : (
+              <>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className={`bg-white/5 border-white/10 hover:bg-white/10 text-xs gap-2 ${isShortlisted ? "text-rose-400 border-rose-400/30" : ""}`}
+                  onClick={() => onShortlist(university)}
+                >
+                  <Heart className={`w-3.5 h-3.5 ${isShortlisted ? "fill-current" : ""}`} />
+                  {isShortlisted ? "Shortlisted" : "Shortlist"}
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="bg-white/5 border-white/10 hover:bg-white/10 text-xs gap-2"
+                >
+                  <MapIcon className="w-3.5 h-3.5" />
+                  Campus
+                </Button>
+              </>
+            )}
             <Button 
               className="col-span-2 bg-gradient-to-br from-slate-700 via-slate-800 to-slate-900 border border-white/10 hover:border-white/20 text-white text-xs font-bold gap-2 py-5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]"
               onClick={() => onLock(university)}

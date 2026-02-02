@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { LayoutGrid, Compass, UserCircle } from "lucide-react";
+import { LayoutGrid, Compass, Heart, UserCircle } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 
@@ -30,6 +30,13 @@ const DOCK_ITEMS: DockItem[] = [
     color: "text-emerald-400",
   },
   {
+    id: "shortlist",
+    icon: Heart,
+    label: "Shortlist",
+    path: "/discovery/review",
+    color: "text-rose-400",
+  },
+  {
     id: "profile",
     icon: UserCircle,
     label: "Identity",
@@ -49,7 +56,13 @@ export default function NeuralDock() {
     return null;
   }
 
-  const isActive = (path: string) => pathname === path;
+  const isActive = (path: string) => {
+    // For shortlist, match both exact path and parent discovery path when on review
+    if (path === "/discovery/review") {
+      return pathname === path;
+    }
+    return pathname === path;
+  };
 
   return (
     <motion.div

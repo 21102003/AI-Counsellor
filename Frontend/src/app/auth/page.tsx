@@ -401,13 +401,12 @@ function AuthPageContent() {
         initial={{ x: -100, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-        className="hidden lg:flex w-1/2 relative flex-col items-center justify-center p-12 overflow-hidden border-r border-white/5"
-      >
+        className="hidden lg:flex w-1/2 relative flex-col items-center justify-center p-12 overflow-hidden border-r border-white/10 bg-[#0B1120]">
         {/* Animated Background Mesh */}
         <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/20 via-black to-black animate-pulse-slow" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/10 blur-[120px] rounded-full" />
-          <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-indigo-500/5 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-br from-indigo-950/20 via-transparent to-purple-950/20" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-600/10 blur-[120px] rounded-full" />
+          <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-teal-600/5 to-transparent" />
         </div>
 
         <div className="relative z-10 text-center space-y-8 max-w-md">
@@ -422,15 +421,15 @@ function AuthPageContent() {
             }}
             className="w-24 h-24 mx-auto relative flex items-center justify-center"
           >
-            <div className="absolute inset-0 bg-indigo-500/20 blur-2xl rounded-full" />
-            <Hexagon className="w-20 h-20 text-indigo-500 stroke-[1.5]" />
+            <div className="absolute inset-0 bg-indigo-600/20 blur-2xl rounded-full" />
+            <Hexagon className="w-20 h-20 text-indigo-600 stroke-[1.5]" />
             <div className="absolute inset-0 flex items-center justify-center">
-              <Cpu className="w-8 h-8 text-cyan-400" />
+              <Cpu className="w-8 h-8 text-teal-600" />
             </div>
           </motion.div>
 
           <div className="space-y-4">
-            <h2 className="text-4xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60">
+            <h2 className="text-4xl font-bold tracking-tight text-white">
               Your Strategy Awaits.
             </h2>
             <p className="text-slate-400 text-lg leading-relaxed">
@@ -439,7 +438,7 @@ function AuthPageContent() {
           </div>
 
           <div className="pt-8">
-            <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-white/[0.03] border border-white/[0.08] backdrop-blur-xl text-sm text-slate-300">
+            <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm text-sm text-slate-300">
               <span className="flex h-2 w-2 rounded-full bg-green-500 animate-pulse" />
               Trusted by 12,000+ students aiming for Top 50 Universities.
             </div>
@@ -448,7 +447,7 @@ function AuthPageContent() {
       </motion.div>
 
       {/* Right Panel - The Gateway */}
-      <div className="w-full lg:w-1/2 flex flex-col items-center justify-center p-6 sm:p-12 relative">
+      <div className="w-full lg:w-1/2 flex flex-col items-center justify-center p-6 sm:p-12 relative bg-[#0B1120] shadow-xl shadow-black/50">
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -458,22 +457,21 @@ function AuthPageContent() {
           {/* Header & Toggle */}
           <div className="space-y-6">
             <motion.div variants={itemVariants} className="space-y-2">
-              <h1 className="text-3xl font-bold tracking-tight">
+              <h1 className="text-3xl font-bold tracking-tight text-white">
                 {isLogin ? "Welcome Back" : "Initialize Profile"}
               </h1>
-              <p className="text-slate-500 text-sm">
+              <p className="text-slate-400 text-sm">
                 Enter your credentials to access the central intelligence unit.
               </p>
             </motion.div>
 
             <motion.div 
               variants={itemVariants}
-              className="p-1 bg-white/[0.03] border border-white/[0.08] rounded-xl flex"
-            >
+              className="p-1 bg-white/5 border border-white/10 rounded-xl flex">
               <button
                 onClick={() => setIsLogin(true)}
                 className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all duration-300 ${
-                  isLogin ? "bg-white/10 text-white shadow-xl" : "text-slate-500 hover:text-slate-300"
+                  isLogin ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/30" : "text-slate-400 hover:text-white"
                 }`}
               >
                 Login
@@ -481,7 +479,7 @@ function AuthPageContent() {
               <button
                 onClick={() => setIsLogin(false)}
                 className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all duration-300 ${
-                  !isLogin ? "bg-white/10 text-white shadow-xl" : "text-slate-500 hover:text-slate-300"
+                  !isLogin ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/30" : "text-slate-400 hover:text-white"
                 }`}
               >
                 Join
@@ -505,8 +503,8 @@ function AuthPageContent() {
                     <motion.div 
                       animate={shakeFields && nameError ? { x: [-10, 10, -10, 10, 0] } : {}}
                       transition={{ duration: 0.4 }}
-                      className={`bg-white/[0.03] border rounded-xl p-3 group-focus-within:border-indigo-500/50 transition-all duration-300 ${
-                        nameError ? "border-rose-500/50" : name.trim().split(/\s+/).filter(w => w.length > 0).length >= 2 ? "border-emerald-500/50" : "border-white/10"
+                      className={`bg-white/5 border rounded-xl p-3 group-focus-within:ring-2 group-focus-within:ring-indigo-500 group-focus-within:border-indigo-500 transition-all duration-300 ${
+                        nameError ? "border-rose-500" : name.trim().split(/\s+/).filter(w => w.length > 0).length >= 2 ? "border-emerald-500" : "border-white/10"
                       }`}
                     >
                       <div className="flex items-center gap-3">
@@ -520,10 +518,10 @@ function AuthPageContent() {
                             handleNameChange(e.target.value);
                             if (nameError) setNameError(false);
                           }}
-                          className="bg-transparent border-none outline-none w-full text-white placeholder:text-slate-400 text-sm"
+                          className="bg-transparent border-none outline-none w-full text-white placeholder:text-slate-500 text-sm"
                         />
                         {name.length === 0 ? (
-                          <div className="w-1.5 h-1.5 rounded-full bg-slate-600" />
+                          <div className="w-1.5 h-1.5 rounded-full bg-slate-300" />
                         ) : name.trim().split(/\s+/).filter(w => w.length > 0).length >= 2 ? (
                           <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(34,197,94,0.6)] animate-pulse" />
                         ) : (
@@ -531,7 +529,7 @@ function AuthPageContent() {
                         )}
                       </div>
                       {nameErrorMsg && (
-                        <p className="text-[10px] text-rose-400 mt-1.5 ml-7">{nameErrorMsg}</p>
+                        <p className="text-[10px] text-rose-500 mt-1.5 ml-7">{nameErrorMsg}</p>
                       )}
                     </motion.div>
                   </motion.div>
@@ -542,8 +540,8 @@ function AuthPageContent() {
                 <motion.div 
                   animate={shakeFields && emailError ? { x: [-10, 10, -10, 10, 0] } : {}}
                   transition={{ duration: 0.4 }}
-                  className={`bg-white/[0.03] border rounded-xl p-3 group-focus-within:border-indigo-500/50 transition-all duration-300 ${
-                    emailError ? "border-rose-500/50" : email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/) ? "border-emerald-500/50" : "border-white/10"
+                  className={`bg-white/5 border rounded-xl p-3 group-focus-within:ring-2 group-focus-within:ring-indigo-500 group-focus-within:border-indigo-500 transition-all duration-300 ${
+                    emailError ? "border-rose-500" : email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/) ? "border-emerald-500" : "border-white/10"
                   }`}
                 >
                   <div className="flex items-center gap-3">
@@ -557,10 +555,10 @@ function AuthPageContent() {
                         setEmail(e.target.value);
                         if (e.target.value.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) setEmailError(false);
                       }}
-                      className="bg-transparent border-none outline-none w-full text-white placeholder:text-slate-400 text-sm"
+                      className="bg-transparent border-none outline-none w-full text-white placeholder:text-slate-500 text-sm"
                     />
                     {email.length === 0 ? (
-                      <div className="w-1.5 h-1.5 rounded-full bg-slate-600" />
+                      <div className="w-1.5 h-1.5 rounded-full bg-slate-300" />
                     ) : email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/) ? (
                       <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(34,197,94,0.6)] animate-pulse" />
                     ) : (
@@ -568,7 +566,7 @@ function AuthPageContent() {
                     )}
                   </div>
                   {emailErrorMsg && (
-                    <p className="text-[10px] text-rose-400 mt-1.5 ml-7">{emailErrorMsg}</p>
+                    <p className="text-[10px] text-rose-500 mt-1.5 ml-7">{emailErrorMsg}</p>
                   )}
                 </motion.div>
               </motion.div>
@@ -577,8 +575,8 @@ function AuthPageContent() {
                 <motion.div 
                   animate={shakeFields && passwordError ? { x: [-10, 10, -10, 10, 0] } : {}}
                   transition={{ duration: 0.4 }}
-                  className={`bg-white/[0.03] border rounded-xl p-3 group-focus-within:border-indigo-500/50 transition-all duration-300 ${
-                    passwordError ? "border-rose-500/50" : password.length >= 8 && /[A-Z]/.test(password) && /[0-9]/.test(password) && /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password) ? "border-emerald-500/50" : "border-white/10"
+                  className={`bg-white/5 border rounded-xl p-3 group-focus-within:ring-2 group-focus-within:ring-indigo-500 group-focus-within:border-indigo-500 transition-all duration-300 ${
+                    passwordError ? "border-rose-500" : password.length >= 8 && /[A-Z]/.test(password) && /[0-9]/.test(password) && /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password) ? "border-emerald-500" : "border-white/10"
                   }`}
                 >
                   <div className="flex items-center gap-3">
@@ -592,10 +590,10 @@ function AuthPageContent() {
                         setPassword(e.target.value);
                         if (passwordError) setPasswordError(false);
                       }}
-                      className="bg-transparent border-none outline-none w-full text-white placeholder:text-slate-400 text-sm"
+                      className="bg-transparent border-none outline-none w-full text-white placeholder:text-slate-500 text-sm"
                     />
                     {password.length === 0 ? (
-                      <div className="w-1.5 h-1.5 rounded-full bg-slate-600" />
+                      <div className="w-1.5 h-1.5 rounded-full bg-slate-300" />
                     ) : password.length >= 8 && /[A-Z]/.test(password) && /[0-9]/.test(password) && /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password) ? (
                       <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(34,197,94,0.6)] animate-pulse" />
                     ) : (
@@ -603,25 +601,25 @@ function AuthPageContent() {
                     )}
                   </div>
                   {passwordErrorMsg && (
-                    <p className="text-[10px] text-rose-400 mt-1.5 ml-7">{passwordErrorMsg}</p>
+                    <p className="text-[10px] text-rose-500 mt-1.5 ml-7">{passwordErrorMsg}</p>
                   )}
                   {!isLogin && password.length > 0 && !passwordError && (
                     <div className="mt-2 ml-7 space-y-1">
                       <div className="flex items-center gap-2 text-[10px]">
-                        <div className={`w-1 h-1 rounded-full ${password.length >= 8 ? 'bg-emerald-500' : 'bg-slate-600'}`} />
-                        <span className={password.length >= 8 ? 'text-emerald-400' : 'text-slate-500'}>8+ characters</span>
+                        <div className={`w-1 h-1 rounded-full ${password.length >= 8 ? 'bg-emerald-500' : 'bg-slate-400'}`} />
+                        <span className={password.length >= 8 ? 'text-emerald-600' : 'text-slate-500'}>8+ characters</span>
                       </div>
                       <div className="flex items-center gap-2 text-[10px]">
-                        <div className={`w-1 h-1 rounded-full ${/[A-Z]/.test(password) ? 'bg-emerald-500' : 'bg-slate-600'}`} />
-                        <span className={/[A-Z]/.test(password) ? 'text-emerald-400' : 'text-slate-500'}>Uppercase letter</span>
+                        <div className={`w-1 h-1 rounded-full ${/[A-Z]/.test(password) ? 'bg-emerald-500' : 'bg-slate-400'}`} />
+                        <span className={/[A-Z]/.test(password) ? 'text-emerald-600' : 'text-slate-500'}>Uppercase letter</span>
                       </div>
                       <div className="flex items-center gap-2 text-[10px]">
-                        <div className={`w-1 h-1 rounded-full ${/[0-9]/.test(password) ? 'bg-emerald-500' : 'bg-slate-600'}`} />
-                        <span className={/[0-9]/.test(password) ? 'text-emerald-400' : 'text-slate-500'}>Number</span>
+                        <div className={`w-1 h-1 rounded-full ${/[0-9]/.test(password) ? 'bg-emerald-500' : 'bg-slate-400'}`} />
+                        <span className={/[0-9]/.test(password) ? 'text-emerald-600' : 'text-slate-500'}>Number</span>
                       </div>
                       <div className="flex items-center gap-2 text-[10px]">
-                        <div className={`w-1 h-1 rounded-full ${/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password) ? 'bg-emerald-500' : 'bg-slate-600'}`} />
-                        <span className={/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password) ? 'text-emerald-400' : 'text-slate-500'}>Special character</span>
+                        <div className={`w-1 h-1 rounded-full ${/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password) ? 'bg-emerald-500' : 'bg-slate-400'}`} />
+                        <span className={/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password) ? 'text-emerald-600' : 'text-slate-500'}>Special character</span>
                       </div>
                     </div>
                   )}
@@ -634,7 +632,7 @@ function AuthPageContent() {
                 <button 
                   type="button" 
                   onClick={() => setError(isLogin ? "Password recovery coming soon" : "Switch to Login tab")}
-                  className="text-slate-500 hover:text-indigo-400 transition-colors"
+                  className="text-slate-400 hover:text-indigo-400 transition-colors"
                 >
                   {isLogin ? "Recover Access Key" : "Already have ID?"}
                 </button>
@@ -645,8 +643,8 @@ function AuthPageContent() {
                 disabled={isLoading || isSuccess}
                 className={`w-full h-12 rounded-xl font-bold transition-all duration-300 ${
                   isSuccess 
-                  ? "bg-green-500 text-black" 
-                  : "bg-white text-black hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(255,255,255,0.15)]"
+                  ? "bg-green-500 text-white shadow-lg" 
+                  : "bg-indigo-600 text-white hover:bg-indigo-700 hover:scale-[1.01] shadow-lg shadow-indigo-600/30"
                 }`}
               >
                 {isLoading ? (
@@ -667,10 +665,10 @@ function AuthPageContent() {
           <motion.div variants={itemVariants} className="space-y-6">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-white/5" />
+                <div className="w-full border-t border-white/10" />
               </div>
               <div className="relative flex justify-center text-[10px] uppercase tracking-widest">
-                <span className="bg-[#030712] px-4 text-slate-600">
+                <span className="bg-[#0B1120] px-4 text-slate-500">
                   Or continue with verified ID
                 </span>
               </div>
@@ -702,8 +700,7 @@ function AuthPageContent() {
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="absolute bottom-8 left-1/2 -translate-x-1/2 w-full max-w-xs p-4 bg-red-500/10 border border-red-500/20 backdrop-blur-xl rounded-xl flex items-center gap-3 text-red-400 text-sm shadow-2xl shadow-red-500/10"
-            >
+              className="absolute bottom-8 left-1/2 -translate-x-1/2 w-full max-w-xs p-4 bg-red-500/10 border border-red-500/30 backdrop-blur-xl rounded-xl flex items-center gap-3 text-red-400 text-sm shadow-lg">
               <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
               {error}
             </motion.div>
@@ -719,7 +716,7 @@ export default function AuthPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-[#030712] flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-cyan-400 animate-spin" />
+        <Loader2 className="w-8 h-8 text-indigo-400 animate-spin" />
       </div>
     }>
       <AuthPageContent />
