@@ -28,11 +28,14 @@ export const NeuralBackground: React.FC<NeuralBackgroundProps> = ({
   const [nodes, setNodes] = useState<Node[]>([]);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const [isMounted, setIsMounted] = useState(false);
   const animationFrameRef = useRef<number>();
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Initialize nodes with random positions and velocities
   useEffect(() => {
+    setIsMounted(true);
+    
     const updateDimensions = () => {
       if (typeof window !== "undefined") {
         setDimensions({
@@ -274,32 +277,34 @@ export const NeuralBackground: React.FC<NeuralBackgroundProps> = ({
       </svg>
 
       {/* Floating particles (additional depth) */}
-      <div className="absolute inset-0 overflow-hidden">
-        {Array.from({ length: 10 }).map((_, i) => (
-          <motion.div
-            key={`particle-${i}`}
-            className={`absolute rounded-full ${
-              theme === "dark" ? "bg-indigo-400/10" : "bg-indigo-600/10"
-            }`}
-            style={{
-              width: Math.random() * 4 + 2,
-              height: Math.random() * 4 + 2,
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-            }}
-            animate={{
-              y: [0, -30, 0],
-              x: [0, Math.random() * 20 - 10, 0],
-              opacity: [0.2, 0.5, 0.2],
-            }}
-            transition={{
-              duration: Math.random() * 5 + 5,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-          />
-        ))}
-      </div>
+      {isMounted && (
+        <div className="absolute inset-0 overflow-hidden">
+          {Array.from({ length: 10 }).map((_, i) => (
+            <motion.div
+              key={`particle-${i}`}
+              className={`absolute rounded-full ${
+                theme === "dark" ? "bg-indigo-400/10" : "bg-indigo-600/10"
+              }`}
+              style={{
+                width: Math.random() * 4 + 2,
+                height: Math.random() * 4 + 2,
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+              }}
+              animate={{
+                y: [0, -30, 0],
+                x: [0, Math.random() * 20 - 10, 0],
+                opacity: [0.2, 0.5, 0.2],
+              }}
+              transition={{
+                duration: Math.random() * 5 + 5,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Vignette effect for text readability */}
       <div

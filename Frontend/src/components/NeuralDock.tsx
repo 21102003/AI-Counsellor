@@ -51,8 +51,12 @@ export default function NeuralDock() {
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
 
   // 🚫 BLACKLIST: Pages where Dock should be HIDDEN
-  const hiddenRoutes = ['/', '/auth', '/login', '/signup', '/onboarding'];
-  if (hiddenRoutes.includes(pathname) || pathname.startsWith('/auth')) {
+  const hiddenRoutes = ['/auth', '/onboarding', '/login', '/signup'];
+  
+  // Hide on exact root "/" OR any path starting with hidden routes
+  const isHidden = hiddenRoutes.some((route) => pathname.startsWith(route)) || pathname === '/';
+  
+  if (isHidden) {
     return null;
   }
 
