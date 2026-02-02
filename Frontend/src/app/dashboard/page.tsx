@@ -4,6 +4,13 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { CheckCircle, AlertCircle, ArrowRight, BookOpen, Target, UserCircle } from "lucide-react";
 import Link from "next/link";
+import { 
+  calculateProfileScore, 
+  getScoreFeedback, 
+  getCircleProgress, 
+  getScoreColor,
+  type UserProfile 
+} from "@/lib/profile-score";
 
 // Mock Data (Replace with API call later if needed)
 const MOCK_STATS = {
@@ -12,8 +19,24 @@ const MOCK_STATS = {
   stage: 3, // 1=Profile, 2=Discovery, 3=Locked, 4=Applied
 };
 
+interface LockedUniversity {
+  id: string;
+  name: string;
+  location: string;
+  country: string;
+  flag: string;
+  matchScore: number;
+  tuition: number;
+  acceptanceRate: number;
+  type: 'Safe' | 'Target' | 'Dream';
+  tags: string[];
+  aiInsight: string;
+}
+
 export default function DashboardPage() {
   const [mounted, setMounted] = useState(false);
+  const [lockedUniversity, setLockedUniversity] = useState<LockedUniversity | null>(null);
+  const [integrityScore, setIntegrityScore] = useState(0);
 
   useEffect(() => {
     // Verify token exists before rendering
@@ -26,10 +49,47 @@ export default function DashboardPage() {
       return;
     }
     
+    // Load locked university from localStorage
+    const savedUniversity = localStorage.getItem('lockedUniversity');
+    if (savedUniversity) {
+      try {
+        const university = JSON.parse(savedUniversity);
+        setLockedUniversity(university);
+        console.log('[Dashboard] Loaded locked university:', university.name);
+      } catch (error) {
+        console.error('[Dashboard] Failed to parse locked university:', error);
+      }
+    }
+
+    // Load user profile from localStorage
+    let userProfile: UserProfile | null = null;
+    const savedProfile = localStorage.getItem('userProfile');
+    if (savedProfile) {
+      try {
+        userProfile = JSON.parse(savedProfile);
+        console.log('[Dashboard] Loaded user profile:', userProfile);
+      } catch (error) {
+        console.error('[Dashboard] Failed to parse user profile:', error);
+      }
+    }
+
+    // Calculate profile integrity score
+    const score = calculateProfileScore(userProfile, !!savedUniversity, !!token);
+    setIntegrityScore(score);
+    console.log('[Dashboard] Profile integrity score:', score);
+    
     setMounted(true);
   }, []);
 
   if (!mounted) return null;
+
+  // Get feedback for current score
+  const scoreFeedback = getScoreFeedback(integrityScore);
+  
+  // Calculate SVG circle progress
+  const radius = 56;
+  const { circumference, progressOffset } = getCircleProgress(integrityScore, radius);
+  const scoreColor = getScoreColor(integrityScore);
 
   return (
     <div className="min-h-screen bg-[#030712] text-white p-8 font-sans selection:bg-indigo-500/30">
@@ -70,13 +130,42 @@ export default function DashboardPage() {
             <h3 className="text-lg font-medium text-slate-300">Profile Integrity</h3>
             <Target className="w-5 h-5 text-indigo-400 group-hover:rotate-45 transition-transform" />
           </div>
+          
+          {/* Dynamic Circular Progress */}
           <div className="relative w-32 h-32 mx-auto mb-4 flex items-center justify-center">
-             <div className="absolute inset-0 border-4 border-indigo-500/20 rounded-full" />
-             <div className="absolute inset-0 border-4 border-emerald-500 rounded-full border-t-transparent rotate-45" />
-             <span className="text-2xl font-bold">92%</span>
+            <svg className="transform -rotate-90 w-32 h-32">
+              {/* Background Circle */}
+              <circle
+                cx="64"
+                cy="64"
+                r={radius}
+                stroke="currentColor"
+                strokeWidth="8"
+                fill="transparent"
+                className="text-indigo-500/20"
+              />
+              {/* Progress Circle */}
+              <circle
+                cx="64"
+                cy="64"
+                r={radius}
+                stroke="currentColor"
+                strokeWidth="8"
+                fill="transparent"
+                strokeDasharray={circumference}
+                strokeDashoffset={progressOffset}
+                strokeLinecap="round"
+                className={`transition-all duration-1000 ${scoreColor}`}
+              />
+            </svg>
+            {/* Score Text */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="text-2xl font-bold">{integrityScore}%</span>
+            </div>
           </div>
-          <p className="text-center text-sm text-slate-500">
-            Optimization complete. <br /> ready for submission.
+          
+          <p className={`text-center text-sm ${scoreFeedback.color} font-medium`}>
+            {scoreFeedback.message}
           </p>
         </motion.div>
 
@@ -89,17 +178,47 @@ export default function DashboardPage() {
         >
           <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 blur-3xl rounded-full -translate-y-1/2 translate-x-1/2" />
           
-          <h2 className="text-3xl font-bold mb-2">Next Best Action</h2>
-          <p className="text-slate-400 mb-8 max-w-md">
-            Application materials for New York University have been finalized. 
-            Review submission status.
-          </p>
-          
-          <Link href="/discovery">
-             <button className="bg-white text-black px-6 py-3 rounded-lg font-bold flex items-center gap-2 hover:scale-105 transition-transform">
-               Continue Discovery <ArrowRight className="w-4 h-4" />
-             </button>
-          </Link>
+          {lockedUniversity ? (
+            <>
+              <div className="flex items-center gap-3 mb-4">
+                <span className="text-2xl">{lockedUniversity.flag}</span>
+                <div>
+                  <h2 className="text-3xl font-bold">{lockedUniversity.name}</h2>
+                  <p className="text-sm text-slate-400">{lockedUniversity.location}</p>
+                </div>
+              </div>
+              <p className="text-slate-400 mb-8 max-w-md">
+                Application materials for <span className="text-white font-semibold">{lockedUniversity.name}</span> have been finalized. 
+                Review submission status and continue building your profile.
+              </p>
+              
+              <div className="flex gap-3">
+                <Link href="/applications">
+                  <button className="bg-white text-black px-6 py-3 rounded-lg font-bold flex items-center gap-2 hover:scale-105 transition-transform">
+                    View Application <ArrowRight className="w-4 h-4" />
+                  </button>
+                </Link>
+                <Link href="/discovery">
+                  <button className="bg-white/10 text-white px-6 py-3 rounded-lg font-bold flex items-center gap-2 hover:bg-white/20 transition-all border border-white/10">
+                    Continue Discovery
+                  </button>
+                </Link>
+              </div>
+            </>
+          ) : (
+            <>
+              <h2 className="text-3xl font-bold mb-2">No University Locked</h2>
+              <p className="text-slate-400 mb-8 max-w-md">
+                You haven't committed to a university yet. Browse the discovery page to find your perfect match and lock your target.
+              </p>
+              
+              <Link href="/discovery">
+                <button className="bg-white text-black px-6 py-3 rounded-lg font-bold flex items-center gap-2 hover:scale-105 transition-transform">
+                  Go to Discovery <ArrowRight className="w-4 h-4" />
+                </button>
+              </Link>
+            </>
+          )}
         </motion.div>
 
         {/* Card 3: Recent Activity */}
@@ -112,10 +231,10 @@ export default function DashboardPage() {
            <h3 className="text-lg font-medium text-slate-300 mb-4">Execution Log</h3>
            <div className="space-y-3">
              {[
-               { text: "Application Submitted: New York University", time: "Just now", status: "success" },
-               { text: "SOP Generation Completed", time: "2 hours ago", status: "success" },
-               { text: "University Lock Confirmed", time: "1 day ago", status: "neutral" }
-             ].map((item, i) => (
+               lockedUniversity && { text: `University Locked: ${lockedUniversity.name}`, time: "Just now", status: "success" },
+               { text: "Profile Calibration Completed", time: "2 hours ago", status: "success" },
+               { text: "Discovery Mode Activated", time: "1 day ago", status: "neutral" }
+             ].filter(Boolean).map((item, i) => (
                <div key={i} className="flex items-center justify-between p-3 bg-white/5 rounded-lg border border-white/5">
                   <div className="flex items-center gap-3">
                     {item.status === 'success' ? <CheckCircle className="w-4 h-4 text-emerald-400" /> : <BookOpen className="w-4 h-4 text-slate-400" />}

@@ -193,6 +193,18 @@ export default function ManualOnboardingPage() {
       
       console.log('Sending profile update:', JSON.stringify(payload, null, 2));
       
+      // Save profile data to localStorage for dashboard scoring
+      const profileData = {
+        degree: data.degree,
+        gpa: data.gpa,
+        ielts: data.exams.ielts,
+        gre: data.exams.gre,
+        budget: parseInt(data.budget),
+        country: data.targetCountry
+      };
+      localStorage.setItem('userProfile', JSON.stringify(profileData));
+      console.log('Profile data saved to localStorage:', profileData);
+      
       // Send profile data to backend
       const result = await API.profile.update(payload);
       console.log('Profile update successful:', result);

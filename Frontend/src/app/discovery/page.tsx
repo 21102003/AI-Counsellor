@@ -109,9 +109,13 @@ export default function DiscoveryPage() {
     
     try {
       await API.universities.lock(selectedUniForLock.id);
+      
+      // Save locked university to localStorage for dashboard display
+      localStorage.setItem('lockedUniversity', JSON.stringify(selectedUniForLock));
+      
       setSelectedUniForLock(null);
-      // Redirect to applications page
-      window.location.href = "/applications";
+      // Redirect to dashboard to show locked university
+      window.location.href = "/dashboard";
     } catch (error) {
       console.error("Failed to lock university:", error);
     }
